@@ -3,6 +3,7 @@ require('dotenv').config();
 
 function getDbConfig() {
   const url = process.env.MYSQL_URL;
+console.log('MYSQL_URL exists:', !!url);
   if (url) {
     try {
       const parsed = new URL(url);
