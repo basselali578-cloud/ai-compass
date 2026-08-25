@@ -1,6 +1,13 @@
 const express = require('express');
 const cors = require('cors');
+const helmet = require('helmet');
+const rateLimit = require('express-rate-limit');
 require('dotenv').config();
+
+if (!process.env.JWT_SECRET) {
+  console.error('FATAL: JWT_SECRET environment variable is required.');
+  process.exit(1);
+}
 
 const modelsRoutes = require('./routes/models');
 const toolsRoutes = require('./routes/tools');
@@ -12,12 +19,49 @@ const workflowsRoutes = require('./routes/workflows');
 
 const app = express();
 
-app.use(cors());
-app.use(express.json());
+app.set('trust proxy', 1);
+
+app.use(helmet());
+
+const allowedOrigins = (process.env.ALLOWED_ORIGINS || 'http://localhost:4200')
+  .split(',')
+  .map((origin) => origin.trim())
+  .filter(Boolean);
+
+app.use(
+  cors({
+    origin(origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+      callback(null, false);
+    }
+  })
+);
+
+app.use(express.json({ limit: '10kb' }));
+
+const generalLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  limit: 300,
+  standardHeaders: 'draft-7',
+  legacyHeaders: false,
+  message: { error: 'Too many requests, please try again later.' }
+});
+
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  limit: 20,
+  standardHeaders: 'draft-7',
+  legacyHeaders: false,
+  message: { error: 'Too many attempts, please try again later.' }
+});
+
+app.use(generalLimiter);
 
 app.use('/api/v1/models', modelsRoutes);
 app.use('/api/v1/tools', toolsRoutes);
-app.use('/api/v1/auth', authRoutes);
+app.use('/api/v1/auth', authLimiter, authRoutes);
 app.use('/api/v1/use-cases', useCasesRoutes);
 app.use('/api/v1/saves', savesRoutes);
 app.use('/api/v1/collections', collectionsRoutes);

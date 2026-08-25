@@ -3,12 +3,27 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
 
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+const cleanString = (value, max) => (typeof value === 'string' ? value.trim().slice(0, max) : '');
+
 const register = async (req, res) => {
   try {
-    const { username, email, password } = req.body;
+    const username = cleanString(req.body.username, 30);
+    const email = cleanString(req.body.email, 254).toLowerCase();
+    const password = typeof req.body.password === 'string' ? req.body.password : '';
 
     if (!username || !email || !password) {
       return res.status(400).json({ error: 'All fields are required' });
+    }
+    if (username.length < 3) {
+      return res.status(400).json({ error: 'Username must be at least 3 characters' });
+    }
+    if (!EMAIL_RE.test(email)) {
+      return res.status(400).json({ error: 'Please provide a valid email address' });
+    }
+    if (password.length < 8 || password.length > 128) {
+      return res.status(400).json({ error: 'Password must be between 8 and 128 characters' });
     }
 
     const [existing] = await pool.query('SELECT id FROM users WHERE email = ? OR username = ?', [email, username]);
@@ -36,7 +51,8 @@ const register = async (req, res) => {
 
 const login = async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const email = cleanString(req.body.email, 254).toLowerCase();
+    const password = typeof req.body.password === 'string' ? req.body.password : '';
 
     if (!email || !password) {
       return res.status(400).json({ error: 'Email and password are required' });
