@@ -12,6 +12,8 @@ const init = Promise.race([
 const handler = serverless(app);
 
 module.exports = async (req, res) => {
-  await init;
+  if (!req.url.startsWith('/api/v1/health')) {
+    await init;
+  }
   return handler(req, res);
 };
