@@ -1,7 +1,4 @@
-const serverless = require('serverless-http');
 const app = require('../src/app');
-
-const handler = serverless(app);
 
 module.exports = (req, res) => {
   const allUrls = [
@@ -13,9 +10,9 @@ module.exports = (req, res) => {
 
   if (allUrls.includes('health')) {
     res.writeHead(200, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify({ status: 'ok', version: 'deploy-v2', timestamp: new Date().toISOString() }));
+    res.end(JSON.stringify({ status: 'ok', version: 'deploy-v3', timestamp: new Date().toISOString() }));
     return;
   }
 
-  return handler(req, res);
+  return app(req, res);
 };
