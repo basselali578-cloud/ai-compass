@@ -13,6 +13,7 @@ function getDbConfig() {
         user: decodeURIComponent(parsed.username),
         password: decodeURIComponent(parsed.password),
         database: parsed.pathname ? parsed.pathname.replace(/^\//, '') : undefined,
+        connectTimeout: 15000,
         ...(useSsl ? { ssl: { minVersion: 'TLSv1.2' } } : {})
       };
     } catch (err) {
@@ -24,7 +25,8 @@ function getDbConfig() {
     port: Number(process.env.DB_PORT) || 3306,
     user: process.env.DB_USER || 'root',
     password: process.env.DB_PASSWORD || '',
-    database: process.env.DB_NAME || 'ai_compass'
+    database: process.env.DB_NAME || 'ai_compass',
+    connectTimeout: 15000
   };
 }
 
