@@ -23,4 +23,18 @@ async function ensureSchema() {
   }
 }
 
-module.exports = { ensureSchema };
+let schemaInit = null;
+
+function getSchemaInit() {
+  if (!schemaInit) {
+    schemaInit = Promise.race([
+      ensureSchema(),
+      new Promise((_, reject) => setTimeout(() => reject(new Error('Schema bootstrap timed out')), 20000))
+    ]).catch((err) => {
+      console.error('Bootstrap failed:', err.message);
+    });
+  }
+  return schemaInit;
+}
+
+module.exports = { ensureSchema, getSchemaInit };

@@ -59,6 +59,15 @@ const authLimiter = rateLimit({
 
 app.use(generalLimiter);
 
+app.get('/api/v1/health', (req, res) => {
+  res.json({ status: 'ok', timestamp: new Date().toISOString() });
+});
+
+const { getSchemaInit } = require('./bootstrap');
+app.use((req, res, next) => {
+  getSchemaInit().then(() => next());
+});
+
 app.use('/api/v1/models', modelsRoutes);
 app.use('/api/v1/tools', toolsRoutes);
 app.use('/api/v1/auth', authLimiter, authRoutes);
@@ -66,10 +75,6 @@ app.use('/api/v1/use-cases', useCasesRoutes);
 app.use('/api/v1/saves', savesRoutes);
 app.use('/api/v1/collections', collectionsRoutes);
 app.use('/api/v1/workflows', workflowsRoutes);
-
-app.get('/api/v1/health', (req, res) => {
-  res.json({ status: 'ok', timestamp: new Date().toISOString() });
-});
 
 app.use((err, req, res, next) => {
   console.error(err.stack);
