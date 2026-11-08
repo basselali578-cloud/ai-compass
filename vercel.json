@@ -1,0 +1,19 @@
+{
+  "version": 2,
+  "regions": ["fra1"],
+  "installCommand": "npm ci --prefix backend && npm ci --prefix frontend",
+  "buildCommand": "npm --prefix frontend run build",
+  "outputDirectory": "frontend/dist/frontend/browser",
+  "functions": {
+    "api/index.js": {
+      "maxDuration": 60,
+      "includeFiles": "backend/database/**"
+    }
+  },
+  "rewrites": [
+    {
+      "source": "/api/v1/(.*)",
+      "destination": "/api/index"
+    }
+  ]
+}
