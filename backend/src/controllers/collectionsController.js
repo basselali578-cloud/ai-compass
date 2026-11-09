@@ -31,7 +31,7 @@ const getCollectionBySlug = async (req, res) => {
        LEFT JOIN tool_use_cases tu ON t.id = tu.tool_id
        LEFT JOIN use_cases uc ON tu.use_case_id = uc.id
        WHERE ct.collection_id = ?
-       GROUP BY t.id
+       GROUP BY t.id, ct.sort_order
        ORDER BY ct.sort_order ASC`,
       [collection.id]
     );
