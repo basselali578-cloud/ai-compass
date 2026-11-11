@@ -133,6 +133,31 @@ const searchTools = async (req, res) => {
   }
 };
 
+const getGemTools = async (req, res) => {
+  try {
+    const [rows] = await pool.query(
+      `SELECT t.*,
+        COALESCE(GROUP_CONCAT(uc.slug), '') as use_cases
+       FROM tools t
+       LEFT JOIN tool_use_cases tu ON t.id = tu.tool_id
+       LEFT JOIN use_cases uc ON tu.use_case_id = uc.id
+       WHERE t.is_gem = 1
+       GROUP BY t.id
+       ORDER BY t.rating DESC, t.name ASC`
+    );
+    res.json({
+      data: rows.map(r => ({
+        ...r,
+        use_cases: r.use_cases ? r.use_cases.split(',') : [],
+        beginner_friendly: !!r.beginner_friendly
+      }))
+    });
+  } catch (err) {
+    console.error('Error fetching gem tools:', err);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
 const getTrendingTools = async (req, res) => {
   try {
     const [rows] = await pool.query(
@@ -304,4 +329,4 @@ const createTool = async (req, res) => {
   }
 };
 
-module.exports = { getAllTools, getToolById, getToolByName, createTool, searchTools, getTrendingTools };
+module.exports = { getAllTools, getToolById, getToolByName, createTool, searchTools, getTrendingTools, getGemTools };
