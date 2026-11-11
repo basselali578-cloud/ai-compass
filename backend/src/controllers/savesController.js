@@ -40,7 +40,7 @@ const saveTool = async (req, res) => {
     }
 
     await pool.query(
-      'INSERT INTO saves (user_id, tool_id, note, folder, expires_at) VALUES (?, ?, ?, ?, NOW() + INTERVAL 7 DAY) ON DUPLICATE KEY UPDATE note = VALUES(note), folder = VALUES(folder), expires_at = NOW() + INTERVAL 7 DAY',
+      'INSERT INTO saves (user_id, tool_id, note, folder, expires_at) VALUES (?, ?, ?, ?, NOW() + INTERVAL 7 DAY) ON DUPLICATE KEY UPDATE note = COALESCE(VALUES(note), note), expires_at = NOW() + INTERVAL 7 DAY',
       [req.user.id, toolId, note || null, 'Unsorted']
     );
 
