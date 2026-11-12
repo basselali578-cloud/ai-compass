@@ -166,7 +166,7 @@ const getTrendingTools = async (req, res) => {
        FROM tools t
        LEFT JOIN tool_use_cases tu ON t.id = tu.tool_id
        LEFT JOIN use_cases uc ON tu.use_case_id = uc.id
-       WHERE t.trending_rank > 0 OR t.is_new = 1 OR t.is_gem = 1
+       WHERE t.trending_rank > 0
        GROUP BY t.id
        ORDER BY ISNULL(t.trending_rank), t.trending_rank DESC, t.is_new DESC, t.is_gem DESC`
     );
