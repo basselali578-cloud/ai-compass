@@ -133,6 +133,12 @@ const searchTools = async (req, res) => {
   }
 };
 
+const toList = (v) => {
+  if (Array.isArray(v)) return v;
+  if (!v) return [];
+  try { const parsed = JSON.parse(v); return Array.isArray(parsed) ? parsed : []; } catch { return []; }
+};
+
 const getGemTools = async (req, res) => {
   try {
     const [rows] = await pool.query(
@@ -149,7 +155,9 @@ const getGemTools = async (req, res) => {
       data: rows.map(r => ({
         ...r,
         use_cases: r.use_cases ? r.use_cases.split(',') : [],
-        beginner_friendly: !!r.beginner_friendly
+        beginner_friendly: !!r.beginner_friendly,
+        pros: toList(r.pros),
+        cons: toList(r.cons)
       }))
     });
   } catch (err) {
@@ -174,7 +182,9 @@ const getTrendingTools = async (req, res) => {
       data: rows.map(r => ({
         ...r,
         use_cases: r.use_cases ? r.use_cases.split(',') : [],
-        beginner_friendly: !!r.beginner_friendly
+        beginner_friendly: !!r.beginner_friendly,
+        pros: toList(r.pros),
+        cons: toList(r.cons)
       }))
     });
   } catch (err) {
