@@ -80,7 +80,7 @@ import { ToolLogoComponent } from '../../shared/components/tool-logo/tool-logo.c
                 <p-tag *ngIf="tool.beginner_friendly" value="Beginner friendly" severity="info"></p-tag>
               </div>
               <div class="card-footer">
-                <span class="expiry" [class.warn]="tool.expires_in_days <= 2"><i class="pi pi-clock"></i> Expires in {{ expiresIn(tool) }}</span>
+                <span class="expiry" [class.warn]="tool.expires_in_days <= 2"><i class="pi pi-clock"></i> Expires {{ expiresIn(tool) }}</span>
                 <a [href]="tool.url" target="_blank" rel="noopener" class="visit-link">Visit <i class="pi pi-external-link"></i></a>
               </div>
             </div>
@@ -247,10 +247,10 @@ export class SavedComponent implements OnInit {
 
   expiresIn(tool: SavedTool): string {
     const days = tool.expires_in_days;
-    if (days === null || days === undefined) return '7 days';
+    if (days === null || days === undefined) return 'in 7 days';
     if (days <= 0) return 'today';
-    if (days === 1) return '1 day';
-    return `${days} days`;
+    if (days === 1) return 'tomorrow';
+    return `in ${days} days`;
   }
 
   pricingSeverity(p: string): 'success' | 'warn' | 'danger' | 'info' {
