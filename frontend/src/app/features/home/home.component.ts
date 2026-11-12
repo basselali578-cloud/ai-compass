@@ -751,20 +751,16 @@ export class HomeComponent implements OnInit {
   loadTrending(): void {
     this.trendingLoading = true;
     this.trendingError = false;
-    this.gemsLoading = true;
-    this.gemsError = false;
     this.api.getTrendingTools().subscribe({
       next: res => {
         this.trending = res.data.slice(0, 6);
-        this.gems = this.pickGems(res.data);
         this.trendingLoading = false;
-        this.gemsLoading = false;
+        this.loadGems();
       },
       error: () => {
         this.trendingLoading = false;
         this.trendingError = true;
-        this.gemsLoading = false;
-        this.gemsError = true;
+        this.loadGems();
       }
     });
   }
@@ -779,7 +775,7 @@ export class HomeComponent implements OnInit {
   loadGems(): void {
     this.gemsLoading = true;
     this.gemsError = false;
-    this.api.getTrendingTools().subscribe({
+    this.api.getGemTools().subscribe({
       next: res => { this.gems = this.pickGems(res.data); this.gemsLoading = false; },
       error: () => { this.gemsLoading = false; this.gemsError = true; }
     });

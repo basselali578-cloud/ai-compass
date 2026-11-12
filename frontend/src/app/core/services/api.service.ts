@@ -54,6 +54,10 @@ export class ApiService {
     return this.http.get<{ data: Tool[] }>(`${this.API_URL}/tools/trending`);
   }
 
+  getGemTools(): Observable<{ data: Tool[] }> {
+    return this.http.get<{ data: Tool[] }>(`${this.API_URL}/tools/gems`);
+  }
+
   getCollections(): Observable<{ data: Collection[] }> {
     return this.http.get<{ data: Collection[] }>(`${this.API_URL}/collections`);
   }
